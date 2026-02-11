@@ -1,0 +1,101 @@
+{
+  "nPagina": 2,
+  "nTotPaginas": 2,
+  "nRegistros": 3,
+  "nTotRegistros": 4,
+  "movimentos": [
+    {
+      "detalhes": {
+        "cCPFCNPJCliente": "280.255.858-75",
+        "cCodCateg": "1.01.99",
+        "cGrupo": "CONTA_CORRENTE_REC",
+        "cHrConcilia": "16:46:06",
+        "cNatureza": "R",
+        "cNumDocFiscal": "9001",
+        "cNumTitulo": "RPS 8488",
+        "cOperacao": "01",
+        "cOrigem": "BAXR",
+        "cStatus": "RECEBIDO",
+        "cTipo": "NFS",
+        "dDtConcilia": "18/02/2025",
+        "dDtCredito": "17/02/2025",
+        "dDtEmissao": "16/01/2025",
+        "dDtPagamento": "17/02/2025",
+        "dDtPrevisao": "15/05/2025",
+        "dDtVenc": "15/02/2025",
+        "nCodBaixa": 6781969613,
+        "nCodCC": 2113059637,
+        "nCodCliente": 6770659414,
+        "nCodMovCC": 6781969611,
+        "nCodMovCCRepet": 6781969611,
+        "nCodTitulo": 6773242363,
+        "nValorMovCC": 126.68
+      },
+      "resumo": {
+        "nValPago": 126.68
+      }
+    },
+    {
+      "detalhes": {
+        "cCPFCNPJCliente": "280.255.858-75",
+        "cCodCateg": "1.01.99",
+        "cGrupo": "CONTA_CORRENTE_REC",
+        "cHrConcilia": "11:02:54",
+        "cNatureza": "R",
+        "cNumDocFiscal": "9001",
+        "cNumTitulo": "RPS 8488",
+        "cOperacao": "01",
+        "cOrigem": "BAXR",
+        "cStatus": "RECEBIDO",
+        "cTipo": "NFS",
+        "dDtConcilia": "17/04/2025",
+        "dDtCredito": "15/04/2025",
+        "dDtEmissao": "16/01/2025",
+        "dDtPagamento": "15/04/2025",
+        "dDtPrevisao": "15/05/2025",
+        "dDtVenc": "15/02/2025",
+        "nCodBaixa": 6810313360,
+        "nCodCC": 2113059637,
+        "nCodCliente": 6770659414,
+        "nCodMovCC": 6810313359,
+        "nCodMovCCRepet": 6810313359,
+        "nCodTitulo": 6773242363,
+        "nValorMovCC": 126.66
+      },
+      "resumo": {
+        "nValPago": 126.66
+      }
+    },
+    {
+      "detalhes": {
+        "cCPFCNPJCliente": "280.255.858-75",
+        "cCodCateg": "1.01.99",
+        "cGrupo": "CONTA_CORRENTE_REC",
+        "cHrConcilia": "18:21:52",
+        "cNatureza": "R",
+        "cNumDocFiscal": "9001",
+        "cNumTitulo": "RPS 8488",
+        "cOperacao": "01",
+        "cOrigem": "BAXR",
+        "cStatus": "RECEBIDO",
+        "cTipo": "NFS",
+        "dDtConcilia": "20/05/2025",
+        "dDtCredito": "02/05/2025",
+        "dDtEmissao": "16/01/2025",
+        "dDtPagamento": "02/05/2025",
+        "dDtPrevisao": "15/05/2025",
+        "dDtVenc": "15/02/2025",
+        "nCodBaixa": 6816268690,
+        "nCodCC": 2113059637,
+        "nCodCliente": 6770659414,
+        "nCodMovCC": 6816268689,
+        "nCodMovCCRepet": 6816268689,
+        "nCodTitulo": 6773242363,
+        "nValorMovCC": 126.66
+      },
+      "resumo": {
+        "nValPago": 126.66
+      }
+    }
+  ]
+}

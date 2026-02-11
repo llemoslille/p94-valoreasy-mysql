@@ -1,0 +1,40 @@
+project-id: lille-422512
+project-name: lille 
+cloud: gcp
+credentials-path: C:\Repositorio\Python\p94-valoreasy\config\lille-422512-a12a0a3c757b.json
+bucket-projeto: p94_valoreasy
+bucket-raw: bronze
+bucket-silver: silver
+bucket-gold: gold
+bucket-processed: processed-data
+bucket-dw: dw-data
+
+# Configurações específicas para GCS Bronze
+gcs:
+  bronze:
+    bucket: p94_valoreasy
+    folder: bronze
+    storage-class: STANDARD
+    retention-days: 365
+  silver:
+    bucket: p94_valoreasy
+    folder: silver
+    storage-class: NEARLINE
+    retention-days: 730
+  gold:
+    bucket: p94_valoreasy
+    folder: gold
+    storage-class: COLDLINE
+    retention-days: 1825
+
+# Configurações de E-mail
+email:
+  enabled: true  # Habilitar/desabilitar envio de e-mail
+  smtp_server: smtp.gmail.com  # Servidor SMTP
+  smtp_port: 587  # Porta SMTP (587 para TLS, 465 para SSL)
+  smtp_user: lilleschoolbr@gmail.com  # Usuário SMTP
+  smtp_password: fbquzrktbfbekfal  # Senha de aplicativo (sem espaços)
+  from_email: lilleschoolbr@gmail.com  # E-mail remetente
+  to_emails:  # Lista de destinatários
+    - rubens@lilleschool.com.br
+    - llemos@lilleschool.com.br
