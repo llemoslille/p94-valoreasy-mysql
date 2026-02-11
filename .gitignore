@@ -63,3 +63,6 @@ Thumbs.db
 *.json
 config/*.json
 !config/config.yaml
+
+# Environment variables
+.env

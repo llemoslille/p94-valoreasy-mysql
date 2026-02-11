@@ -1,0 +1,117 @@
+name: Executar Pipeline ETL
+
+on:
+  workflow_dispatch:  # Permite execução manual
+    inputs:
+      pipeline_mode:
+        description: 'Modo de execução do pipeline'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - raw
+          - silver_gold
+  schedule:
+    # Executa diariamente às 07:30 (horário de Brasília) = 10:30 UTC
+    - cron: '30 10 * * *'
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'main.py'
+      - 'src/**'
+      - 'config/**'
+      - '.github/workflows/run_pipeline.yml'
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60  # Timeout de 60 minutos
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Instalar dependências do sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-libmysqlclient-dev pkg-config
+
+      - name: Instalar dependências Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Criar diretório de configuração
+        run: |
+          mkdir -p config
+
+      - name: Configurar credenciais GCP
+        if: env.GCP_CREDENTIALS != ''
+        env:
+          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        run: |
+          if [ -n "$GCP_CREDENTIALS" ]; then
+            echo "$GCP_CREDENTIALS" > config/lille-422512-a12a0a3c757b.json
+            echo "Credenciais GCP configuradas"
+          else
+            echo "Aviso: GCP_CREDENTIALS não configurado. Algumas funcionalidades podem não funcionar."
+          fi
+
+      - name: Atualizar config.yaml com caminho Linux
+        run: |
+          # Atualiza o caminho das credenciais para o ambiente Linux
+          if [ -f config/config.yaml ]; then
+            sed -i 's|C:\\Repositorio\\Python\\p94-valoreasy\\config\\lille-422512-a12a0a3c757b.json|config/lille-422512-a12a0a3c757b.json|g' config/config.yaml
+            echo "config.yaml atualizado para ambiente Linux"
+          fi
+
+      - name: Executar Pipeline
+        id: pipeline
+        run: |
+          # Determina o modo de execução baseado no tipo de evento
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            MODE="${{ github.event.inputs.pipeline_mode }}"
+          else
+            MODE="full"
+          fi
+          
+          echo "Executando pipeline no modo: $MODE"
+          
+          case $MODE in
+            raw)
+              echo "Executando apenas camada RAW..."
+              python main.py raw
+              ;;
+            silver_gold)
+              echo "Executando camadas SILVER e GOLD..."
+              python main.py silver_gold
+              ;;
+            full|*)
+              echo "Executando pipeline completo (RAW -> SILVER -> GOLD)..."
+              python main.py
+              ;;
+          esac
+
+      - name: Upload logs em caso de erro
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-logs-${{ github.run_id }}
+          path: |
+            *.log
+            logs/
+          retention-days: 7
+
+      - name: Notificar sucesso
+        if: success()
+        run: |
+          echo "✅ Pipeline executado com sucesso!"
