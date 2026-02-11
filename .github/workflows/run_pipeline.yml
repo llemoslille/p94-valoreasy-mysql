@@ -55,7 +55,6 @@ jobs:
           mkdir -p config
 
       - name: Configurar credenciais GCP
-        if: env.GCP_CREDENTIALS != ''
         env:
           GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
         run: |
@@ -66,13 +65,79 @@ jobs:
             echo "Aviso: GCP_CREDENTIALS não configurado. Algumas funcionalidades podem não funcionar."
           fi
 
-      - name: Atualizar config.yaml com caminho Linux
+      - name: Gerar config.yaml dinamicamente
+        env:
+          PROJECT_ID: ${{ secrets.PROJECT_ID || 'lille-422512' }}
+          PROJECT_NAME: ${{ secrets.PROJECT_NAME || 'lille' }}
+          CLOUD: ${{ secrets.CLOUD || 'gcp' }}
+          BUCKET_PROJETO: ${{ secrets.BUCKET_PROJETO || 'p94_valoreasy' }}
+          BUCKET_RAW: ${{ secrets.BUCKET_RAW || 'bronze' }}
+          BUCKET_SILVER: ${{ secrets.BUCKET_SILVER || 'silver' }}
+          BUCKET_GOLD: ${{ secrets.BUCKET_GOLD || 'gold' }}
+          BUCKET_PROCESSED: ${{ secrets.BUCKET_PROCESSED || 'processed-data' }}
+          BUCKET_DW: ${{ secrets.BUCKET_DW || 'dw-data' }}
+          EMAIL_ENABLED: ${{ secrets.EMAIL_ENABLED || 'true' }}
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER || 'smtp.gmail.com' }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT || '587' }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+          TO_EMAILS: ${{ secrets.TO_EMAILS }}
         run: |
-          # Atualiza o caminho das credenciais para o ambiente Linux
-          if [ -f config/config.yaml ]; then
-            sed -i 's|C:\\Repositorio\\Python\\p94-valoreasy\\config\\lille-422512-a12a0a3c757b.json|config/lille-422512-a12a0a3c757b.json|g' config/config.yaml
-            echo "config.yaml atualizado para ambiente Linux"
+          cat > config/config.yaml << EOF
+          project-id: ${PROJECT_ID}
+          project-name: ${PROJECT_NAME}
+          cloud: ${CLOUD}
+          credentials-path: config/lille-422512-a12a0a3c757b.json
+          bucket-projeto: ${BUCKET_PROJETO}
+          bucket-raw: ${BUCKET_RAW}
+          bucket-silver: ${BUCKET_SILVER}
+          bucket-gold: ${BUCKET_GOLD}
+          bucket-processed: ${BUCKET_PROCESSED}
+          bucket-dw: ${BUCKET_DW}
+
+          # Configurações específicas para GCS Bronze
+          gcs:
+            bronze:
+              bucket: ${BUCKET_PROJETO}
+              folder: ${BUCKET_RAW}
+              storage-class: STANDARD
+              retention-days: 365
+            silver:
+              bucket: ${BUCKET_PROJETO}
+              folder: ${BUCKET_SILVER}
+              storage-class: NEARLINE
+              retention-days: 730
+            gold:
+              bucket: ${BUCKET_PROJETO}
+              folder: ${BUCKET_GOLD}
+              storage-class: COLDLINE
+              retention-days: 1825
+
+          # Configurações de E-mail
+          email:
+            enabled: ${EMAIL_ENABLED}
+            smtp_server: ${SMTP_SERVER}
+            smtp_port: ${SMTP_PORT}
+            smtp_user: ${SMTP_USER}
+            smtp_password: ${SMTP_PASSWORD}
+            from_email: ${FROM_EMAIL}
+            to_emails:
+          EOF
+          
+          # Adiciona os emails destinatários (pode ter múltiplos separados por vírgula)
+          if [ -n "$TO_EMAILS" ]; then
+            IFS=',' read -ra EMAILS <<< "$TO_EMAILS"
+            for email in "${EMAILS[@]}"; do
+              echo "    - ${email}" >> config/config.yaml
+            done
+          else
+            echo "    - rubens@lilleschool.com.br" >> config/config.yaml
+            echo "    - llemos@lilleschool.com.br" >> config/config.yaml
           fi
+          
+          echo "config.yaml gerado com sucesso"
+          cat config/config.yaml
 
       - name: Executar Pipeline
         id: pipeline
